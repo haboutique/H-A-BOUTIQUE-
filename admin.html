@@ -3,99 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard - H&A Boutique</title>
+<title>H&A Boutique Admin</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial;background:#111;color:#fff;padding:20px}
-.login{max-width:400px;margin:100px auto;background:#222;padding:30px;border-radius:15px;text-align:center}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial}
+body{background:#111;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.login{max-width:400px;width:100%;background:#222;padding:30px;border-radius:15px;text-align:center}
 .login input{width:100%;padding:12px;margin:15px 0;border-radius:8px;border:none}
 .login button{width:100%;padding:12px;background:#d8a35d;color:#000;font-weight:bold;border:none;border-radius:8px}
-.header{background:#222;padding:15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.form{background:#222;padding:20px;border-radius:12px;margin-bottom:20px}
-.form input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:none;background:#333;color:#fff}
-.form button{width:100%;padding:14px;background:#d8a35d;color:#000;font-weight:bold;border:none;border-radius:8px;margin-top:10px;font-size:16px}
-.products{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:#222;border-radius:12px;overflow:hidden;padding:10px;text-align:center}
-.card img{width:100%;height:150px;object-fit:cover;border-radius:8px}
-.card h4{margin:8px 0 4px}
-.card p{color:#d8a35d;font-weight:bold}
-.card button{background:red;color:#fff;border:none;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%}
-#adminPanel{display:none}
-.note{background:#333;padding:12px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#ccc;border-left:4px solid #d8a35d}
+#dash{display:none;width:100%;max-width:900px}
+.header{background:#222;padding:15px;border-radius:12px;display:flex;justify-content:space-between;margin-bottom:20px}
 </style>
 </head>
 <body>
-<div id="loginBox" class="login">
-<h2>H&A Boutique</h2>
-<p style="margin:10px 0;color:#aaa">Admin Dashboard Login</p>
-<input type="password" id="pass" placeholder="Password likho">
-<button onclick="login()">Login Karo</button>
-<p style="margin-top:12px;font-size:12px;color:#777">Password: Azeem$5911</p>
+<div class="login" id="loginBox">
+<h2>H&A Boutique</h2><br><p>Admin Login</p><br>
+<input type="password" id="p" placeholder="Password">
+<button onclick="go()">Login Karo</button>
+<p id="e" style="color:red;margin-top:10px"></p>
 </div>
-<div id="adminPanel">
-<div class="header">
-<h3>H&A BOUTIQUE - Dashboard</h3>
-<a href="index.html" style="color:#d8a35d;text-decoration:none">Website Dekho</a>
+<div id="dash">
+<div class="header"><h3>Welcome Azeem Bhai - Dashboard Open ✅</h3><button onclick="logout()" style="padding:8px 15px;border-radius:6px">Logout</button></div>
+<div style="background:#222;padding:20px;border-radius:12px">
+<p>🎉 Mubarak ho! Dashboard khul gaya hai</p><br>
+<p><a href="index.html" style="color:#d8a35d">→ Apni Website Dekho</a></p>
 </div>
-<div class="note">
-<b>Kaise Kaam Karta Hai:</b><br>
-1. Neeche product ki tasveer, naam, price likho<br>
-2. "Product Add Karo" dabao<br>
-3. Product list me aa jayega
-</div>
-<div class="form">
-<h4 style="margin-bottom:10px">Naya Product Add Karo</h4>
-<input type="file" id="imgInput" accept="image/*">
-<input type="text" id="pName" placeholder="Product ka naam - jaise Black Kurta">
-<input type="text" id="pPrice" placeholder="Price - jaise 2500">
-<input type="text" id="pDesc" placeholder="Description - jaise 3pc Lawn Suit">
-<button onclick="addProduct()">Product Add Karo +</button>
-</div>
-<h4 style="margin:10px 0">Aapke Products (<span id="count">0</span>)</h4>
-<div id="productList" class="products"></div>
 </div>
 <script>
-function login(){
-  if(document.getElementById('pass').value==='Azeem$5911){
-    document.getElementById('loginBox').style.display='none';
-    document.getElementById('adminPanel').style.display='block';
-    loadProducts();
-  }else{alert('Password galat hai! Password hai: Azeem$5911');}
+function go(){
+let v=document.getElementById('p').value.trim();
+if(v==="Azeem$5911"){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('dash').style.display='block';
+localStorage.setItem('ha','1');
+}else{document.getElementById('e').innerText='Galat Password';}
 }
-let products = JSON.parse(localStorage.getItem('haboutique_products') || '[]');
-function addProduct(){
-  const file = document.getElementById('imgInput').files[0];
-  const name = document.getElementById('pName').value;
-  const price = document.getElementById('pPrice').value;
-  const desc = document.getElementById('pDesc').value;
-  if(!file ||!name ||!price){alert('Tasveer, Naam aur Price zaroori hai!');return;}
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const newProduct = {id:Date.now(), img:e.target.result, name:name, price:price, desc:desc};
-    products.unshift(newProduct);
-    localStorage.setItem('haboutique_products', JSON.stringify(products));
-    document.getElementById('pName').value='';document.getElementById('pPrice').value='';document.getElementById('pDesc').value='';document.getElementById('imgInput').value='';
-    loadProducts();
-    alert('Product Add Ho Gaya!');
-  };
-  reader.readAsDataURL(file);
-}
-function loadProducts(){
-  const list = document.getElementById('productList');
-  document.getElementById('count').innerText = products.length;
-  list.innerHTML = '';
-  if(products.length===0){list.innerHTML='<p style="color:#777">Abhi koi product nahi hai. Upar se add karo.</p>';return;}
-  products.forEach(p=>{
-    list.innerHTML+=`<div class="card"><img src="${p.img}"><h4>${p.name}</h4><p>Rs. ${p.price}</p><small style="color:#aaa">${p.desc||''}</small><button onclick="deleteProduct(${p.id})">Delete</button></div>`;
-  });
-}
-function deleteProduct(id){
-  if(confirm('Delete karna hai?')){
-    products = products.filter(p=>p.id!==id);
-    localStorage.setItem('haboutique_products', JSON.stringify(products));
-    loadProducts();
-  }
-}
+function logout(){localStorage.removeItem('ha');location.reload();}
+if(localStorage.getItem('ha')==='1'){document.getElementById('loginBox').style.display='none';document.getElementById('dash').style.display='block';}
 </script>
 </body>
 </html>
