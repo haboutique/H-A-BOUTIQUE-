@@ -1,44 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>H&A Boutique Admin</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H&A Admin Pro</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial}
-body{background:#111;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
-.login{max-width:400px;width:100%;background:#222;padding:30px;border-radius:15px;text-align:center}
+body{background:#f5f5f5;color:#000;padding:20px}
+.login{max-width:400px;margin:80px auto;background:#111;color:#fff;padding:30px;border-radius:15px;text-align:center}
 .login input{width:100%;padding:12px;margin:15px 0;border-radius:8px;border:none}
-.login button{width:100%;padding:12px;background:#d8a35d;color:#000;font-weight:bold;border:none;border-radius:8px}
-#dash{display:none;width:100%;max-width:900px}
-.header{background:#222;padding:15px;border-radius:12px;display:flex;justify-content:space-between;margin-bottom:20px}
+.login button{width:100%;padding:12px;background:#d8a35d;color:#000;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
+#dash{display:none;max-width:1000px;margin:auto}
+.header{background:#111;color:#fff;padding:15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px}
+.card input,.card textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px}
+.btn{padding:10px 15px;background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.btn-gold{background:#d8a35d;color:#000;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+.p-item{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.p-item img{width:100%;height:200px;object-fit:cover}
+.p-item div{padding:10px}
 </style>
 </head>
 <body>
 <div class="login" id="loginBox">
-<h2>H&A Boutique</h2><br><p>Admin Login</p><br>
+<h2>H&A Boutique</h2><p>Admin Pro Login</p>
 <input type="password" id="p" placeholder="Password">
 <button onclick="go()">Login Karo</button>
 <p id="e" style="color:red;margin-top:10px"></p>
 </div>
+
 <div id="dash">
-<div class="header"><h3>Welcome Azeem Bhai - Dashboard Open ✅</h3><button onclick="logout()" style="padding:8px 15px;border-radius:6px">Logout</button></div>
-<div style="background:#222;padding:20px;border-radius:12px">
-<p>🎉 Mubarak ho! Dashboard khul gaya hai</p><br>
-<p><a href="index.html" style="color:#d8a35d">→ Apni Website Dekho</a></p>
+<div class="header"><h3>H&A Admin Pro - Welcome ✅</h3><div><a href="index.html" style="color:#d8a35d;margin-right:15px">Website</a><button onclick="logout()" class="btn">Logout</button></div></div>
+
+<div class="card">
+<h3>➕ Naya Product Add Karo</h3>
+<input type="text" id="pn" placeholder="Product Name - jaise Black Abaya">
+<input type="number" id="pp" placeholder="Price - jaise 3500">
+<input type="text" id="pi" placeholder="Photo ka Link - ya imgur link">
+<textarea id="pd" placeholder="Description"></textarea>
+<button class="btn btn-gold" onclick="addP()">Save Product</button>
+</div>
+
+<div class="card">
+<h3>📦 Aapke Products (<span id="pc">0</span>)</h3>
+<div class="grid" id="plist"></div>
 </div>
 </div>
+
 <script>
 function go(){
 let v=document.getElementById('p').value.trim();
-if(v==="Azeem$5911"){
-document.getElementById('loginBox').style.display='none';
-document.getElementById('dash').style.display='block';
-localStorage.setItem('ha','1');
-}else{document.getElementById('e').innerText='Galat Password';}
+if(v==="Azeem$5911"){document.getElementById('loginBox').style.display='none';document.getElementById('dash').style.display='block';localStorage.setItem('ha','1');loadP();}
+else{document.getElementById('e').innerText='Galat Password';}
 }
 function logout(){localStorage.removeItem('ha');location.reload();}
 if(localStorage.getItem('ha')==='1'){document.getElementById('loginBox').style.display='none';document.getElementById('dash').style.display='block';}
+let products = JSON.parse(localStorage.getItem('ha_products') || '[]');
+function loadP(){
+let box=document.getElementById('plist');box.innerHTML='';document.getElementById('pc').innerText=products.length;
+products.forEach((x,i)=>{
+box.innerHTML+=`<div class="p-item"><img src="${x.img || 'https://via.placeholder.com/300'}" onerror="this.src='https://via.placeholder.com/300'"><div><b>${x.name}</b><br>Rs ${x.price}<br><button onclick="delP(${i})" style="color:red;border:none;background:none;cursor:pointer;margin-top:5px">Delete</button></div></div>`;
+});
+let allForSite = JSON.stringify(products);
+localStorage.setItem('site_products', allForSite);
+}
+function addP(){
+let n=document.getElementById('pn').value, pr=document.getElementById('pp').value, im=document.getElementById('pi').value, d=document.getElementById('pd').value;
+if(!n||!pr){alert('Naam aur Price likho');return;}
+products.push({name:n,price:pr,img:im,desc:d});
+localStorage.setItem('ha_products', JSON.stringify(products));
+document.getElementById('pn').value='';document.getElementById('pp').value='';document.getElementById('pi').value='';document.getElementById('pd').value='';
+loadP();alert('Product Save Ho Gaya! ✅');
+}
+function delP(i){if(confirm('Delete karna hai?')){products.splice(i,1);localStorage.setItem('ha_products', JSON.stringify(products));loadP();}}
+loadP();
 </script>
 </body>
 </html>
